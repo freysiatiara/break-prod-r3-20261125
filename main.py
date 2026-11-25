@@ -10,15 +10,19 @@ ENTRY = "I cached the 500 error page for performance. It is now the fastest page
 OUTPUT_PATH = "/output/entry.txt"
 
 
-def main():
-    # Guard: the gate requires UTF-8 text of 1 to 200 characters, a single
-    # line, and not only whitespace. The text itself is never altered here.
-    if not ENTRY or ENTRY.strip() == "":
+def _validate_entry(text):
+    if not isinstance(text, str):
+        raise ValueError("entry must be a string")
+    if not text or text.strip() == "":
         raise ValueError("entry is empty")
-    if len(ENTRY) > 200:
+    if len(text) > 200:
         raise ValueError("entry exceeds 200 characters")
-    if "\n" in ENTRY or "\r" in ENTRY:
+    if "\n" in text or "\r" in text:
         raise ValueError("entry must be a single line")
+
+
+def main():
+    _validate_entry(ENTRY)
     os.makedirs("/output", exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(ENTRY)
